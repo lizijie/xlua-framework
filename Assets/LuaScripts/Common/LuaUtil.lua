@@ -42,9 +42,15 @@ function Bind(self, func, ...)
 	else
 		params = SafePack(self, ...)
 	end
+
 	return function(...)
-		local args = ConcatSafePack(params, SafePack(...))
-		func(SafeUnpack(args))
+		local n = select('#', ...)
+		local args = params
+		if n > 0 then
+			args = ConcatSafePack(args, SafePack(...))
+		end
+		-- FIXME：不return会导致需要返回参数的回调出bug
+		return func(SafeUnpack(args))
 	end
 end
 

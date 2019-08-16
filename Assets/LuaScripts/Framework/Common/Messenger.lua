@@ -44,16 +44,22 @@ local function AddListener(self, e_type, e_listener, ...)
 end
 
 local function Broadcast(self, e_type, ...)
-	local event = self.events[e_type]
-	if event == nil then
-		return
-	end
-	
-	for k, v in pairs(event) do
-		assert(k ~= nil)
-		local args = ConcatSafePack(v, SafePack(...))
-		k(SafeUnpack(args))
-	end
+    local event = self.events[e_type]
+    if event == nil then
+        return
+    end
+
+    local n = select('#', ...)
+
+    for k, v in pairs(event) do
+        assert(k ~= nil)
+        if n > 0 then
+            local args = ConcatSafePack(v, SafePack(...))
+            k(SafeUnpack(args))
+        else
+            k(SafeUnpack(v))
+        end
+    end
 end
 
 local function RemoveListener(self, e_type, e_listener)
